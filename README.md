@@ -34,4 +34,6 @@ To compute the distances, run (ensuring that you are in the correct folder).:
 poetry run python compute_differences.py
 ```
 
+The distances are consequently saved in distances.txt.
+
 If you run into any problems, ensure that you are in the right folder to run the code: *demo-acoustic-neural-distance*. 

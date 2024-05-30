@@ -85,13 +85,15 @@ def dtw_distance(a_feats, b_feats):
 
 if __name__ == "__main__":
     # choose model, layer, and initialize featurizer
-    # model = "wav2vec2-large-xlsr-53-ft-cgn"
-    model = "mms-300m"
+    model = "wav2vec2-large-xlsr-53-ft-cgn"
     layer = "15"
     featurizer = load_wav2vec2_featurizer(model, int(layer))
 
+    # choose the computation device:: gpu or cpu
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+
     files = [f for f in Path("recordings").rglob("**/*.wav") if f.is_file()]
-    print(files)
+    print(f"There are {len(files)} files to compare.")
 
     # load audio files and featurize them
     audio_features = {}
@@ -101,11 +103,12 @@ if __name__ == "__main__":
 
     # compute DTW distances
     distances = {}
-    for a, b in combinations(audio_features.keys(), 2):
+    for a, b in tqdm(
+        combinations(audio_features.keys(), 2), ncols=80, desc="Computing distances."
+    ):
         distances[(a, b)] = dtw_distance(audio_features[a], audio_features[b])
 
     # write to file
-
     with open("distances.txt", "w") as f:
         for (a, b), dist in distances.items():
             f.write(f"{a}\t{b}\t{dist}\n")
